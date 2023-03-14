@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "stock.data.ingestor"
+version = "0.1.0"
+description = ""
+authors = ["piroinno <peter.irojah@piroinno.com>"]
+readme = "README.md"
+
+packages = [
+  { include = "stock", from = "src" },
+  { include = "stock/**/*.py", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "src",
+]
