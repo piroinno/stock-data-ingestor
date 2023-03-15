@@ -25,6 +25,10 @@ url = "https://pkgs.dev.azure.com/piroinno/StockData/_packaging/pypifeed/pypi/si
 default = false
 secondary = true
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -64,7 +64,7 @@ jobs:
           FLAG_SMITH_ENVIRONMENT_KEY: ${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }}
       - name: Build Image
         run: |
-          docker build -t stock-data-api --build-arg AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }} --build-arg AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }} .
+          docker build -t stock-data-ingestor --build-arg AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }} --build-arg AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }} .
   
   # ${{ if github.ref == 'refs/heads/main' or github.ref == 'refs/heads/dev' or github.ref == 'refs/heads/uat' }}:
   #   deploy:
