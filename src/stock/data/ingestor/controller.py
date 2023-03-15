@@ -3,26 +3,20 @@ import datetime
 import json
 
 import pytz
-import requests
 import logging
-import os, uuid, sys
+import os
 from azure.identity import DefaultAzureCredential
-from azure.core._match_conditions import MatchConditions
 from azure.storage.queue import (
     QueueClient,
     BinaryBase64EncodePolicy,
     BinaryBase64DecodePolicy,
 )
-from .database import SessionLocal
+from stock.data.model.database import SessionLocal
 from stock.data.model.crud import (
     get_eod_ingestor_data_store,
     get_exchanges,
     get_ticker_by_exchange,
     get_timezone,
-)
-from stock.data.model.models import (
-    ExchangeModel,
-    TimezoneModel,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -83,4 +77,3 @@ def main():
     logger.info("EOD Ingestor Controller finished")
 
 
-main()

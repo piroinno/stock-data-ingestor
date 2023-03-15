@@ -1,22 +1,10 @@
-import json
 import requests
 import logging
-import os, uuid, sys
-from azure.identity import DefaultAzureCredential
-from azure.storage.filedatalake import DataLakeServiceClient
-from azure.core._match_conditions import MatchConditions
-from azure.storage.filedatalake._models import ContentSettings
-from azure.storage.queue import (
-        QueueClient,
-        BinaryBase64EncodePolicy,
-        BinaryBase64DecodePolicy
-)
-from .database import SessionLocal
+import os
+from stock.data.model.database import SessionLocal
 from stock.data.model.crud import (
     get_city,
     get_country,
-    get_currency,
-    get_eod_ingestor_data_store,
     get_exchange,
     get_timezone,
 )
@@ -28,11 +16,6 @@ from stock.data.model.models import (
     ExchangeModel,
     TickerModel,
     TimezoneModel,
-)
-
-from stock.data.model.schemas import (
-    Exchange,
-    Ticker,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -237,7 +220,7 @@ def seed_eod_ingestor_datastore():
 
 def main():
     """Main function"""
-    logger.info("Starting EOD Ingestor")
+    logger.info("Starting Seeding EOD Ingestor")
 
     # seed_timezones()
     # seed_currencies()
