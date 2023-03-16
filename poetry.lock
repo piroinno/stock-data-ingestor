@@ -1037,14 +1037,14 @@ sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
 name = "stock-data-model"
-version = "0.1.20"
+version = "0.1.21"
 description = "stock.data.model"
 category = "main"
 optional = false
 python-versions = ">=3.11,<4.0"
 files = [
-    {file = "stock_data_model-0.1.20-py3-none-any.whl", hash = "sha256:aed41d5484854dfb55341fe8c6e6f24c05d216a7b4187ad7510bf0593d6398c7"},
-    {file = "stock_data_model-0.1.20.tar.gz", hash = "sha256:51f8bddb524867c2672661c56158465a11bc32bcec2914f89a88025a4d9ae002"},
+    {file = "stock_data_model-0.1.21-py3-none-any.whl", hash = "sha256:04034dd86850922ea0c8642884b6b4bef9418ea4ec61128a9efd263f71a364a3"},
+    {file = "stock_data_model-0.1.21.tar.gz", hash = "sha256:38252ac2b260dcd958d90744dd5abd2fa42bc414dcc704535e83091bc87e776a"},
 ]
 
 [package.dependencies]

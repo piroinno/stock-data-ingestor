@@ -54,7 +54,7 @@ def create_job_messages(db, exchanges):
         message = {
             "exchange": exchange.name,
             "exchange_mic": exchange.mic,
-            "date": datetime.datetime.now(pytz.timezone(get_timezone(db, exchange.timezone_id).name)).strftime("%Y-%m-%d"),
+            "date": datetime.datetime.now(pytz.timezone(get_timezone(db, exchange.timezone_id).abbr)).strftime("%Y-%m-%d"),
             "type": "EOD",
             "eod_datastore_id": os.getenv("EOD_DATASTORE_ID"),
             "eod_datastore_name": eod_datastore.name,
