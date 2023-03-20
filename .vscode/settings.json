@@ -1,0 +1,14 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#524830",
+        "titleBar.activeBackground": "#739243",
+        "titleBar.activeForeground": "#FEFCFD"
+    },
+    "python.analysis.extraPaths": [
+        "D:\\PerBak\\Interview\\stock-data-ingestor\\.venv\\Lib\\site-packages",
+        "./src"
+    ],
+    "python.defaultInterpreterPath": "D:\\PerBak\\Interview\\stock-data-ingestor\\.venv\\Scripts\\python.exe",
+    "python.formatting.provider": "black"
+        
+}
