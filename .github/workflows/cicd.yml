@@ -78,12 +78,6 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
-      - name: Package the application
-        uses: piroinno/stock-data-app-automation/build/poetry/@init
-        with:
-          packagefeed: ${{ secrets.AZURE_PYPI_FEED }}
-          packagefeedpassword: ${{ secrets.AZURE_PYPI_PASSWORD }}
-          packagefeedmetadata: "${{ secrets.AZURE_PYPI_METADATA }}"
       - name: Build docker image
         uses: piroinno/stock-data-app-automation/build/docker/@init
         with:
