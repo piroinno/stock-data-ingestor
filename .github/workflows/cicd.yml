@@ -11,6 +11,22 @@ on:
     branches:
       - dev
       - main
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_ACR_CLIENT_ID: ${{ secrets.ARM_ACR_CLIENT_ID }}
+  ARM_ACR_CLIENT_SECRET: ${{ secrets.ARM_ACR_CLIENT_SECRET }}
+  ARM_ACR_SUBSCRIPTION_ID: ${{ secrets.ARM_ACR_SUBSCRIPTION_ID }}
+  APP_LANDING_ZONE: 'environments'
+  APP_LANDING_ZONE_ROOT_PATH: ${{ github.workspace }}/application/environments
+  APP_NAMES: 'ingestor'
+  APP_AUTO_WORKING_FOLDER: "./"
+  APP_AUTO_WORKING_PATH: ${{ github.workspace }}/application
+  ENVIRONMENT: ${{ fromJSON('["dev", "prd"]')[github.ref == 'refs/heads/main'] }}
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
