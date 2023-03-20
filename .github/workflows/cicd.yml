@@ -52,7 +52,6 @@ jobs:
         with:
           packagefeed: ${{ secrets.AZURE_PYPI_FEED }}
           packagefeedpassword: ${{ secrets.AZURE_PYPI_PASSWORD }}
-          flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
           testdatabasehost: localhost
           testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
 
@@ -78,7 +77,6 @@ jobs:
           applicationbuildtags: "${{ env.ENVIRONMENT }},latest"
           applicationbuildimagename: "${{ matrix.app }}"
           applicationbuildimageregistry: "${{ secrets.ACR_LOGIN_SERVER }}"
-          applicationbuilddockerfileargs: "FLAGSMITH_ENVIRONMENT_KEY=${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}"
           applicationbuilddefaulttag: "${{ github.sha }}"
           applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
           applicationbuilddockerfile: "Dockerfile"
