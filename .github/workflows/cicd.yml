@@ -40,8 +40,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
+
     steps:
       - uses: actions/checkout@v3
       - name: Test the application
@@ -50,6 +49,9 @@ jobs:
           packagefeed: ${{ secrets.PACKAGE_FEED }}
           packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
           flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: 5432
 
   build:
     runs-on: ubuntu-latest
