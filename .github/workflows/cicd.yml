@@ -70,6 +70,7 @@ jobs:
           packagefeedpassword: ${{ secrets.AZURE_PYPI_PASSWORD }}
           testdatabasehost: localhost
           testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
+          appfolder: ${{ matrix.app }}
 
   build:
     runs-on: ubuntu-latest
@@ -91,5 +92,4 @@ jobs:
           applicationbuilddefaulttag: "${{ github.sha }}"
           applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
           applicationbuilddockerfile: "Dockerfile"
-
           
