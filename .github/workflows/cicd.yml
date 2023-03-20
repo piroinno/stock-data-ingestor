@@ -50,8 +50,8 @@ jobs:
       - name: Test the application
         uses: piroinno/stock-data-app-automation/test/poetry/@init
         with:
-          packagefeed: ${{ secrets.PACKAGE_FEED }}
-          packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
+          packagefeed: ${{ secrets.AZURE_PYPI_FEED }}
+          packagefeedpassword: ${{ secrets.AZURE_PYPI_PASSWORD }}
           flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
           testdatabasehost: localhost
           testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
@@ -82,4 +82,5 @@ jobs:
           applicationbuilddefaulttag: "${{ github.sha }}"
           applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
           applicationbuilddockerfile: "Dockerfile"
+
           
