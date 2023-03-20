@@ -53,7 +53,7 @@ jobs:
           packagefeed: ${{ secrets.PACKAGE_FEED }}
           packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
           flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
-          testdatabasehost: postgres
+          testdatabasehost: localhost
           testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
 
   build:
