@@ -43,6 +43,6 @@ RUN apk update && \
     apk add --no-cache \
     libpq-dev
 
-COPY ./src/stock/data/ingestor/*py /app/
+COPY ./ingestor/src/stock/data/ingestor/*py /app/
 
-CMD [ "echo override me" ]
+CMD [ "echo 'override me'" ]
