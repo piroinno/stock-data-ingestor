@@ -92,4 +92,5 @@ jobs:
           applicationbuilddefaulttag: "${{ github.sha }}"
           applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
           applicationbuilddockerfile: "Dockerfile"
+          applicationbuilddockerfileargs: "AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }},AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }}"
           
