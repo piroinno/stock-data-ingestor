@@ -9,8 +9,27 @@ on:
       - dev
       - main
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        shell: pwsh
+        run: |
+          $matrix = @()
+          $apps = "$($env:APP_NAMES)" -split ','
+          foreach($app in $apps){
+            $matrix += "{`"app`":`"$app`"}"
+          }
+          Write-Host("::set-output name=matrix::{`"include`":[$($matrix -join ',')]}")
+
+  test:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     services:
       postgres:
         image: postgres
@@ -25,47 +44,37 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v3
-      - name: Setting up Python 3.11
-        uses: actions/setup-python@v2
-        id: installed-python-version
+      - name: Test the application
+        uses: piroinno/stock-data-app-automation/test/poetry/@init
         with:
-          python-version: 3.11
-      - name: Installing and configuring Poetry
-        uses: snok/install-poetry@v1
+          packagefeed: ${{ secrets.PACKAGE_FEED }}
+          packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
+          flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [prepare, test]
+    strategy:
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Package the application
+        uses: piroinno/stock-data-app-automation/build/poetry/@init
         with:
-          version: 1.3.2
-          virtualenvs-create: true
-          virtualenvs-path: ~/.venv
-          virtualenvs-in-project: false
-          installer-parallel: true
-      - name: Using Cache for Poetry Dependencies
-        uses: actions/cache@v2
-        id: cached-dependencies
+          packagefeed: ${{ secrets.PACKAGE_FEED }}
+          packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
+      - name: Build docker image
+        uses: piroinno/stock-data-app-automation/build/docker/@init
         with:
-          path: ~/.venv
-          key: venv-${{ runner.os }}-${{ steps.installed-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Installing dependencies
-        run: |
-          poetry source add --secondary pypifeed "https://${{ secrets.AZURE_PYPI_FEED }}"
-          poetry config http-basic.pypifeed pypifeed ${{ secrets.AZURE_PYPI_PASSWORD }}
-          poetry install
-        if: steps.cached-dependencies.outputs.cache-hit != 'true'
-      - name: Linting with flake8
-        run: |
-          pip install flake8
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Testing with pytest
-        run: |
-          pip install pytest
-          poetry run python -m pytest
-        env:
-          DATABASE_URL: postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/postgres
-          FLAG_SMITH_ENVIRONMENT_KEY: ${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }}
-      - name: Build Image
-        run: |
-          docker build -t stock-data-ingestor --build-arg AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }} --build-arg AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }} .
-  
-  # ${{ if github.ref == 'refs/heads/main' or github.ref == 'refs/heads/dev' or github.ref == 'refs/heads/uat' }}:
-  #   deploy:
-  
+          appfolder: ${{ matrix.app }}
+          applicationbuildphase: "build"
+          automatedrun: "true"
+          isbuilddryrun: "true"
+          applicationbuildtags: "${{ env.ENVIRONMENT }},latest"
+          applicationbuildimagename: "${{ matrix.app }}"
+          applicationbuildimageregistry: "${{ secrets.ACR_LOGIN_SERVER }}"
+          applicationbuilddockerfileargs: "FLAGSMITH_ENVIRONMENT_KEY=${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}"
+          applicationbuilddefaulttag: "${{ github.sha }}"
+          applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
+          applicationbuilddockerfile: "Dockerfile"
+          
