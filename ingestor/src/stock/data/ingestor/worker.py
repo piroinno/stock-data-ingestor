@@ -115,21 +115,20 @@ def save_eod(
         "name": eod_ingestor_datastore_name,
     }
     configure_eod_ingestor_datastore_auth(eod_ingestor_datastore_name, file_system)
-    
-    for eod in eod_data['data']:
+
+    for eod in eod_data["data"]:
         file_name = f"{file_name_preffix}/{eod['symbol']}.json"
         file_content = json.dumps(eod)
         file_system_client = adls_service_client.get_file_system_client(file_system)
         file_client = file_system_client.get_file_client(file_name)
         file_client.create_file()
-        file_client.append_data(
-            data=file_content,
-            offset=0,
-            length=len(file_content)
-        )
+        file_client.append_data(data=file_content, offset=0, length=len(file_content))
         file_client.flush_data(len(file_content))
 
-def log_eod_ingestor_worker_status(success_file_contents, file_name_preffix, file_system):
+
+def log_eod_ingestor_worker_status(
+    success_file_contents, file_name_preffix, file_system
+):
     """Log EOD Ingestor Worker status"""
     logger.info("Logging EOD Ingestor Worker status")
     file_name = f"{file_name_preffix}/EODSTATUS.json"
@@ -137,11 +136,10 @@ def log_eod_ingestor_worker_status(success_file_contents, file_name_preffix, fil
     file_client = file_system_client.get_file_client(file_name)
     file_client.create_file()
     file_client.append_data(
-        data=success_file_contents,
-        offset=0,
-        length=len(success_file_contents)
+        data=success_file_contents, offset=0, length=len(success_file_contents)
     )
     file_client.flush_data(len(success_file_contents))
+
 
 def process_messages():
     logger.info("Getting messages from queue")
@@ -152,7 +150,7 @@ def process_messages():
         )
         for msg_batch in messages.by_page():
             for msg in msg_batch:
-                #try:
+                # try:
                 message = json.loads(base64.b64decode(msg.content).decode("utf-8"))
                 file_system = message["eod_datastore_container"]
                 eod_data = get_ext_eod_exchange(
@@ -168,17 +166,22 @@ def process_messages():
                     file_name_preffix,
                     eod_data,
                     file_system,
-                    message["eod_datastore_name"]
+                    message["eod_datastore_name"],
                 )
-                success_file_contents = json.dumps({
-                    "status": "success",
-                    "message": "EOD data ingested successfully",
-                    "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "file_name_preffix": file_name_preffix,
-                }, indent=4)
-                log_eod_ingestor_worker_status(success_file_contents, file_name_preffix, file_system)
+                success_file_contents = json.dumps(
+                    {
+                        "status": "success",
+                        "message": "EOD data ingested successfully",
+                        "date": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "file_name_preffix": file_name_preffix,
+                    },
+                    indent=4,
+                )
+                log_eod_ingestor_worker_status(
+                    success_file_contents, file_name_preffix, file_system
+                )
                 queue_service_client.delete_message(msg)
-                #except Exception as e:
+                # except Exception as e:
                 #   logger.warning(f"Error processing message: {e}")
 
 

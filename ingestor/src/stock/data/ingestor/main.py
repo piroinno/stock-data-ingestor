@@ -43,12 +43,14 @@ def get_requests_with_offset(endpoint, initial_offset):
 
     return {"data": remove_dupes(data)}
 
+
 def remove_dupes(data):
     new_d = []
     for x in data:
         if x not in new_d:
             new_d.append(x)
     return new_d
+
 
 def get_ext_timezones_list():
     """Get list of timezones from Marketstack API"""
@@ -103,16 +105,18 @@ def get_ext_tickers_list():
     """Get list of tickers from Marketstack API"""
     logger.info("Getting list of tickers from Marketstack API")
     tickers = get_requests_with_offset("tickers", 0)
-    return {"data": tickers['data']}
+    return {"data": tickers["data"]}
 
-def get_ext_eod_exchange(exchange, date = None):
+
+def get_ext_eod_exchange(exchange, date=None):
     """Get EOD data for an exchange from Marketstack API"""
     logger.info("Get EOD data for an exchange from Marketstack API")
     if date is not None:
         tickers = get_requests_with_offset(f"exchange/{exchange.mic}/eod/{date}", 0)
     else:
         tickers = get_requests_with_offset(f"exchange/{exchange.mic}/eod/latest", 0)
-    return {"data": tickers['data']}
+    return {"data": tickers["data"]}
+
 
 def seed_tickers():
     """Seed tickers in database"""
@@ -204,19 +208,21 @@ def seed_timezones():
         db.add(db_timezone)
     db.commit()
 
+
 def seed_eod_ingestor_datastore():
     """Seed EOD Ingestor Datastore"""
     logger.info("Seeding EOD Ingestor Datastore")
     db = SessionLocal()
     db.add(
         EodIngestorDataStoreModel(
-            name=os.getenv("EOD_INGESTOR_DATASTORE_NAME"), 
+            name=os.getenv("EOD_INGESTOR_DATASTORE_NAME"),
             url=os.getenv("EOD_INGESTOR_DATASTORE_URL"),
             container="eod",
             subscription_id=os.getenv("EOD_INGESTOR_DATASTORE_SUBSCRIPTION_ID"),
         )
     )
     db.commit()
+
 
 def main():
     """Main function"""
@@ -228,7 +234,9 @@ def main():
     # seed_cities()
     # seed_exchanges()
     # seed_tickers()
-    #seed_eod_ingestor_datastore()
-    
+    # seed_eod_ingestor_datastore()
+
     logger.info("EOD Ingestor finished")
+
+
 main()
