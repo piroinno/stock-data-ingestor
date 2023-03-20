@@ -48,9 +48,8 @@ jobs:
           packagefeed: ${{ secrets.PACKAGE_FEED }}
           packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
           flagsmithenvironmentkey: ${{ secrets.FLAGSMITH_ENVIRONMENT_KEY }}
-        env:
-          POSTGRES_HOST: postgres
-          POSTGRES_PORT: 5432
+          testdatabasehost: postgres
+          testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
 
   build:
     runs-on: ubuntu-latest
