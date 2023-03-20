@@ -18,6 +18,7 @@ azure-storage-queue = "^12.6.0"
 azure-storage-file-datalake = "^12.10.1"
 azure-identity = "^1.12.0"
 pytz = "^2022.7.1"
+flake8 = "^6.0.0"
 
 [[tool.poetry.source]]
 name = "pypifeed"
