@@ -66,8 +66,8 @@ jobs:
       - name: Package the application
         uses: piroinno/stock-data-app-automation/build/poetry/@init
         with:
-          packagefeed: ${{ secrets.PACKAGE_FEED }}
-          packagefeedpassword: ${{ secrets.PACKAGE_FEED_PASSWORD }}
+          packagefeed: ${{ secrets.AZURE_PYPI_FEED }}
+          packagefeedpassword: ${{ secrets.AZURE_PYPI_PASSWORD }}
       - name: Build docker image
         uses: piroinno/stock-data-app-automation/build/docker/@init
         with:
