@@ -42,7 +42,7 @@ RUN poetry source add --secondary pypifeed "https://${AZURE_PYPI_FEED}" && \
 RUN apk update && \
     apk add --no-cache \
     libpq-dev
-
-COPY ./ingestor/src/stock/data/ingestor/*py /app/
+RUN ls -lrt && pwd && ls -R
+COPY ./src/stock/data/ingestor/*py /app/
 
 CMD [ "echo 'override me'" ]
