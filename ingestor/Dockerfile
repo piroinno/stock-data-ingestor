@@ -43,8 +43,6 @@ RUN apk update && \
     apk add --no-cache \
     libpq-dev
 
-COPY ./ /app/IO
-RUN cd /app/IO && ls -lrt && pwd && ls -R
 COPY ./src/stock/data/ingestor/*py /app/
 
 CMD [ "echo 'override me'" ]
