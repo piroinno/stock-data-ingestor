@@ -85,7 +85,7 @@ jobs:
           appfolder: ${{ matrix.app }}
           applicationbuildphase: "build"
           automatedrun: "true"
-          isbuilddryrun: "true"
+          isbuilddryrun: "false"
           applicationbuildtags: "${{ env.ENVIRONMENT }},latest"
           applicationbuildimagename: "${{ matrix.app }}"
           applicationbuildimageregistry: "${{ secrets.ACR_LOGIN_SERVER }}"
