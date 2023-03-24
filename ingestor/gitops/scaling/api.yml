@@ -1,0 +1,97 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: azure-queue-auth
+  namespace: sd-ingestor
+spec:
+  podIdentity:
+    provider: azure | azure-workload
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sd-ingestor-scaledobject
+  namespace: sd-ingestor
+spec:
+  scaleTargetRef:
+    name: sd-ingestor-deployment
+  triggers:
+  - type: azure-queue
+    metadata:
+      queueName: ingestor-job-queue
+      accountName: dehwstcomsddev
+      queueLength: "5"
+      cloud: public
+    authenticationRef:
+        name: azure-queue-auth
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sd-ingestor-deployment
+  namespace: sd-ingestor
+  labels:
+    app: sd-ingestor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sd-ingestor
+  template:
+    metadata:
+      labels:
+        app: sd-ingestor
+    spec:
+      serviceAccountName: sd-ingestor-service
+      containers:
+        - name: sd-ingestor
+          image: #{{IMAGE}}#
+          resources:
+            requests:
+              memory: "1024M"
+              cpu: "0.2"
+            limits:
+              memory: "2048M"
+              cpu: "1"
+          imagePullPolicy: Always
+          env:
+            - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: FLAG_SMITH_ENVIRONMENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: FLAG_SMITH_ENVIRONMENT_KEY
+            - name: STOCK_DATA_STORAGE_FILE_SYSTEM
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_FILE_SYSTEM
+          volumeMounts:
+            - name: kv-secret-store
+              mountPath: "/mnt/backend-auth"
+              readOnly: true
+      tolerations:
+        - key: "kubernetes.azure.com/scalesetpriority"
+          operator: "Equal"
+          value: "spot"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "kubernetes.azure.com/scalesetpriority"
+                    operator: In
+                    values:
+                      - "spot"
+      volumes:
+        - name: kv-secret-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-sync"

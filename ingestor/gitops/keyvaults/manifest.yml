@@ -1,0 +1,34 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: azure-sync
+  namespace: sd-ingestor
+spec:
+  provider: azure
+  secretObjects:
+  - secretName: backend-auth
+    type: Opaque
+    data:
+    - objectName: STOCK-DATA-STORAGE-ACCOUNT-NAME
+      key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+    - objectName: STOCK-DATA-STORAGE-FILE-SYSTEM
+      key: STOCK_DATA_STORAGE_FILE_SYSTEM
+    - objectName: FLAG-SMITH-ENVIRONMENT-KEY
+      key: FLAG_SMITH_ENVIRONMENT_KEY
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "false"          
+    clientID: "6401c99f-138f-4a0d-95e0-5bda3a5de4c7"
+    keyvaultName: "dehw-kv-sd-ingestor"
+    tenantId: "859e9d09-9fe3-4451-9029-35d7fb1f2e59"   
+    objects:  |
+        array:
+          - |
+            objectName: STOCK-DATA-STORAGE-ACCOUNT-NAME
+            objectType: secret 
+          - |
+            objectName: STOCK-DATA-STORAGE-FILE-SYSTEM
+            objectType: secret 
+          - |
+            objectName: FLAG-SMITH-ENVIRONMENT-KEY
+            objectType: secret

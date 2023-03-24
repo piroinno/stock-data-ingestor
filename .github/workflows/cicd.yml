@@ -1,4 +1,4 @@
-name: Stock Data Ingestor Build / Test / Deploy
+name: Stock Data API Build / Test / Deploy
 run-name: ${{ github.event.repository.updated_at}}_${{ github.run_number }}_${{ github.ref }}
 on:
   workflow_dispatch:
@@ -71,6 +71,7 @@ jobs:
           testdatabasehost: localhost
           testdatabasepassword: ${{ secrets.POSTGRES_PASSWORD }}
           appfolder: ${{ matrix.app }}
+          flagsmithenvironmentkey: ${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }}
 
   build:
     runs-on: ubuntu-latest
@@ -92,5 +93,22 @@ jobs:
           applicationbuilddefaulttag: "${{ github.sha }}"
           applicationbuildimagerepository: "${{ env.APP_LANDING_ZONE}}/application"
           applicationbuilddockerfile: "Dockerfile"
-          applicationbuilddockerfileargs: "AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }}/simple,AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }}"
-          
+          applicationbuilddockerfileargs: "FLAG_SMITH_ENVIRONMENT_KEY=${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }},AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }}/simple,AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }}"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    #needs: [prepare, test]
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    strategy:
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy manifest
+        uses: piroinno/stock-data-app-automation/deploy/manifest/@init
+        with:
+          image: "${{ secrets.ACR_LOGIN_SERVER }}/${{ env.APP_LANDING_ZONE}}/application/${{ matrix.app }}:${{ github.sha }}"
+          mainbranch: "main"
+          statebranch: "state"
+          prmessage: "PR: ${{ github.event.pull_request.title }}"
+          approotpath: ${{ env.APP_LANDING_ZONE_ROOT_PATH }}/${{ matrix.app }}
