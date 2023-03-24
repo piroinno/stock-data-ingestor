@@ -110,4 +110,4 @@ jobs:
           statebranch: "state.${{ env.ENVIRONMENT }}"
           prmessage: "PR: ${{ github.event.pull_request.title }}"
           approotpath: ${{ env.APP_LANDING_ZONE_ROOT_PATH }}/${{ matrix.app }}
-          substituteargs: "IMAGE='${{ secrets.ACR_LOGIN_SERVER }}/${{ env.APP_LANDING_ZONE }}/application/${{ matrix.app }}:${{ env.ENVIRONMENT }}'"
+          substituteargs: "IMAGE=${{ secrets.ACR_LOGIN_SERVER }}/${{ env.APP_LANDING_ZONE }}/application/${{ matrix.app }}:${{ env.ENVIRONMENT }}"
