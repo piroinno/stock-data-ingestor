@@ -29,7 +29,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -45,7 +45,7 @@ jobs:
 
   test:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: prepare
     strategy:
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
@@ -74,7 +74,7 @@ jobs:
           flagsmithenvironmentkey: ${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }}
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [prepare, test]
     strategy:
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
@@ -96,7 +96,7 @@ jobs:
           applicationbuilddockerfileargs: "FLAG_SMITH_ENVIRONMENT_KEY=${{ secrets.FLAG_SMITH_ENVIRONMENT_KEY }},AZURE_PYPI_FEED=${{ secrets.AZURE_PYPI_FEED }}/simple,AZURE_PYPI_PASSWORD=${{ secrets.AZURE_PYPI_PASSWORD }}"
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [prepare, test]
     if: ${{ github.ref == 'refs/heads/main' }}
     strategy:
