@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "stock.data.ingestor"
+version = "0.1.0"
+description = ""
+authors = ["piroinno <peter.irojah@piroinno.com>"]
+readme = "README.md"
+
+packages = [
+  { include = "stock", from = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pytest = "^7.2.2"
+sqlalchemy = "^2.0.6"
+stock-data-model = "^0.1.20"
+azure-storage-queue = "^12.6.0"
+azure-storage-file-datalake = "^12.10.1"
+azure-identity = "^1.12.0"
+pytz = "^2022.7.1"
+flake8 = "^6.0.0"
+
+[[tool.poetry.source]]
+name = "pypifeed"
+url = "https://pkgs.dev.azure.com/piroinno/StockData/_packaging/pypifeed/pypi/simple/"
+default = false
+secondary = true
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "src",
+]
