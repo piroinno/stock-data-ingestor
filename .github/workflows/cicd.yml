@@ -103,6 +103,10 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
+      - name: Set environment variables
+        shell: pwsh
+        run: |
+          "BRANCH=${{ github.ref }}" -replace "refs/heads/", "" >> $env:GITHUB_ENV
       - name: Deploy manifest
         uses: piroinno/stock-data-app-automation/deploy/manifest/@v1.4.0
         with:
