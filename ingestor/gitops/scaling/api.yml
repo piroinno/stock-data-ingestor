@@ -10,11 +10,11 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: sd-ingestor-scaledobject
+  name: sd-ingestor-worker-scaledobject
   namespace: sd-ingestor
 spec:
   scaleTargetRef:
-    name: sd-ingestor-deployment
+    name: sd-ingestor-worker-deployment
   triggers:
   - type: azure-queue
     metadata:
@@ -28,24 +28,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sd-ingestor-deployment
+  name: sd-ingestor-controller-deployment
   namespace: sd-ingestor
   labels:
-    app: sd-ingestor
+    app: sd-ingestor-controller
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sd-ingestor
+      app: sd-ingestor-controller
   template:
     metadata:
       labels:
-        app: sd-ingestor
+        app: sd-ingestor-controller
     spec:
       serviceAccountName: sd-ingestor-service
       containers:
-        - name: sd-ingestor
+        - name: sd-ingestor-controller
           image: #{{IMAGE}}#
+          command: ["python"]
+          args: ["-m", "controller:main"]
           resources:
             requests:
               memory: "1024M"
@@ -55,6 +57,105 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: DATABASE_URL
+            - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: FLAG_SMITH_ENVIRONMENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: FLAG_SMITH_ENVIRONMENT_KEY
+            - name: STOCK_DATA_STORAGE_FILE_SYSTEM
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_FILE_SYSTEM
+          volumeMounts:
+            - name: kv-secret-store
+              mountPath: "/mnt/backend-auth"
+              readOnly: true
+      tolerations:
+        - key: "kubernetes.azure.com/scalesetpriority"
+          operator: "Equal"
+          value: "spot"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "kubernetes.azure.com/scalesetpriority"
+                    operator: In
+                    values:
+                      - "spot"
+      volumes:
+        - name: kv-secret-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-sync"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: sd-ingestor-controller-cron-scaledobject
+  namespace: sd-ingestor
+spec:
+  scaleTargetRef:
+    name: sd-ingestor-worker-deployment
+  triggers:
+  - type: cron
+    metadata:
+      timezone: "Europe/London"
+      start: "* 1 * * *"
+      end: "* 8 * * *"
+      desiredReplicas: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sd-ingestor-worker-deployment
+  namespace: sd-ingestor
+  labels:
+    app: sd-ingestor-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sd-ingestor-worker
+  template:
+    metadata:
+      labels:
+        app: sd-ingestor-worker
+    spec:
+      serviceAccountName: sd-ingestor-service
+      containers:
+        - name: sd-ingestor-worker
+          image: #{{IMAGE}}#
+          command: ["python"]
+          args: ["-m", "worker:main"]
+          resources:
+            requests:
+              memory: "1024M"
+              cpu: "0.2"
+            limits:
+              memory: "2048M"
+              cpu: "1"
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: DATABASE_URL
             - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
               valueFrom:
                 secretKeyRef:

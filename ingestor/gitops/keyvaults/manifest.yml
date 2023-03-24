@@ -9,6 +9,8 @@ spec:
   - secretName: backend-auth
     type: Opaque
     data:
+    - objectName: DATABASE-URL
+      key: DATABASE_URL
     - objectName: STOCK-DATA-STORAGE-ACCOUNT-NAME
       key: STOCK_DATA_STORAGE_ACCOUNT_NAME
     - objectName: STOCK-DATA-STORAGE-FILE-SYSTEM
@@ -23,6 +25,9 @@ spec:
     tenantId: "859e9d09-9fe3-4451-9029-35d7fb1f2e59"   
     objects:  |
         array:
+          - |
+            objectName: DATABASE-URL
+            objectType: secret
           - |
             objectName: STOCK-DATA-STORAGE-ACCOUNT-NAME
             objectType: secret 
