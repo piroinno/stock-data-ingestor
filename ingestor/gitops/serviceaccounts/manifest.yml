@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sd-ingestor-service
+  namespace: sd-ingestor
+  annotations:
+    azure.workload.identity/client-id: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
+  labels:
+    azure.workload.identity/use: "true"
+automountServiceAccountToken: true
+---
