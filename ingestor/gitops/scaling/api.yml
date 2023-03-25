@@ -46,8 +46,8 @@ spec:
       containers:
         - name: sd-ingestor-controller
           image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
-          command: ["python"]
-          args: ["-m", "controller:main"]
+          command: ["poetry"]
+          args: ["run", "python", "-m", "controller:main"]
           resources:
             requests:
               memory: "1024M"
@@ -140,8 +140,8 @@ spec:
       containers:
         - name: sd-ingestor-worker
           image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
-          command: ["python"]
-          args: ["-m", "worker:main"]
+          command: ["poetry"]
+          args: ["python", "run", "-m", "worker:main"]
           resources:
             requests:
               memory: "1024M"
