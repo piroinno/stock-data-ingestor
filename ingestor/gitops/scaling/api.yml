@@ -110,7 +110,7 @@ metadata:
   namespace: sd-ingestor
 spec:
   scaleTargetRef:
-    name: sd-ingestor-worker-deployment
+    name: sd-ingestor-controller-deployment
   triggers:
   - type: cron
     metadata:
