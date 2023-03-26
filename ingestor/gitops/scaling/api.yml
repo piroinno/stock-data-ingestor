@@ -21,7 +21,7 @@ spec:
       queueName: ingestor-job-queue
       accountName: dehwstcomsddev
       queueLength: "5"
-      cloud: public
+      cloud: AzurePublicCloud
     authenticationRef:
         name: azure-queue-auth
 ---
@@ -34,7 +34,7 @@ metadata:
     azure.workload.identity/use: "true"
     app: sd-ingestor-controller
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sd-ingestor-controller
