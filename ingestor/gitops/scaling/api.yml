@@ -16,14 +16,14 @@ spec:
   scaleTargetRef:
     name: sd-ingestor-worker-deployment
   triggers:
-  - type: azure-queue
-    metadata:
-      queueName: ingestor-job-queue
-      accountName: dehwstcomsddev
-      queueLength: "5"
-      cloud: AzurePublicCloud
-      desiredReplicas: "5"
-    authenticationRef:
+    - type: azure-queue
+      metadata:
+        queueName: ingestor-job-queue
+        accountName: dehwstcomsddev
+        queueLength: "5"
+        cloud: AzurePublicCloud
+        desiredReplicas: "5"
+      authenticationRef:
         name: azure-queue-auth
 ---
 apiVersion: apps/v1
@@ -48,7 +48,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-controller
-          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
+          image: #{{IMAGE}}#
           command: ["poetry"]
           args: ["run", "python", "controller.py:main"]
           resources:
@@ -85,7 +85,7 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_FILE_SYSTEM
-             - name: MARKETSTACK_API_KEY
+            - name: MARKETSTACK_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
@@ -125,12 +125,12 @@ spec:
   scaleTargetRef:
     name: sd-ingestor-controller-deployment
   triggers:
-  - type: cron
-    metadata:
-      timezone: "Europe/London"
-      start: "5 * * * *"
-      end: "15 * * * *"
-      desiredReplicas: "1"
+    - type: cron
+      metadata:
+        timezone: "Europe/London"
+        start: "5 * * * *"
+        end: "15 * * * *"
+        desiredReplicas: "1"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -147,12 +147,13 @@ spec:
   template:
     metadata:
       labels:
+        azure.workload.identity/use: "true"
         app: sd-ingestor-worker
     spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-worker
-          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
+          image: #{{IMAGE}}#
           command: ["poetry"]
           args: ["run", "python", "worker.py:main"]
           resources:
@@ -189,7 +190,7 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_FILE_SYSTEM
-             - name: MARKETSTACK_API_KEY
+            - name: MARKETSTACK_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
