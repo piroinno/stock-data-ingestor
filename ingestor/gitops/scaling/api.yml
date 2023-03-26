@@ -22,6 +22,7 @@ spec:
       accountName: dehwstcomsddev
       queueLength: "5"
       cloud: AzurePublicCloud
+      desiredReplicas: "5"
     authenticationRef:
         name: azure-queue-auth
 ---
@@ -117,8 +118,8 @@ spec:
   - type: cron
     metadata:
       timezone: "Europe/London"
-      start: "* 1 * * *"
-      end: "* 8 * * *"
+      start: "5 * * * *"
+      end: "15 * * * *"
       desiredReplicas: "1"
 ---
 apiVersion: apps/v1
@@ -129,7 +130,7 @@ metadata:
   labels:
     app: sd-ingestor-worker
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sd-ingestor-worker
