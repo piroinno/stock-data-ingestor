@@ -194,3 +194,5 @@ def main():
     process_messages()
 
     logger.info("EOD Ingestor finished")
+
+main()
