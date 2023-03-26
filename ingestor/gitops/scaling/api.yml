@@ -31,6 +31,7 @@ metadata:
   name: sd-ingestor-controller-deployment
   namespace: sd-ingestor
   labels:
+    azure.workload.identity/use: "true"
     app: sd-ingestor-controller
 spec:
   replicas: 1
@@ -40,6 +41,7 @@ spec:
   template:
     metadata:
       labels:
+        azure.workload.identity/use: "true"
         app: sd-ingestor-controller
     spec:
       serviceAccountName: sd-ingestor-service
