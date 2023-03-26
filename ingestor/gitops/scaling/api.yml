@@ -5,7 +5,8 @@ metadata:
   namespace: sd-ingestor
 spec:
   podIdentity:
-    provider: azure | azure-workload
+    provider: azure-workload
+    identityId: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -50,7 +51,7 @@ spec:
         - name: sd-ingestor-controller
           image: #{{IMAGE}}#
           command: ["poetry"]
-          args: ["run", "python", "controller.py:main"]
+          args: ["run", "python", "controller.py"]
           resources:
             requests:
               memory: "1024M"
@@ -128,8 +129,8 @@ spec:
     - type: cron
       metadata:
         timezone: "Europe/London"
-        start: "5 * * * *"
-        end: "15 * * * *"
+        start: "45 * * * *"
+        end: "55 * * * *"
         desiredReplicas: "1"
 ---
 apiVersion: apps/v1
@@ -155,7 +156,7 @@ spec:
         - name: sd-ingestor-worker
           image: #{{IMAGE}}#
           command: ["poetry"]
-          args: ["run", "python", "worker.py:main"]
+          args: ["run", "python", "worker.py"]
           resources:
             requests:
               memory: "1024M"
