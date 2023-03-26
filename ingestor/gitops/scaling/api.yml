@@ -48,7 +48,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-controller
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "controller.py:main"]
           resources:
@@ -123,7 +123,7 @@ metadata:
   namespace: sd-ingestor
 spec:
   scaleTargetRef:
-    name: sd-ingestor-worker-deployment
+    name: sd-ingestor-controller-deployment
   triggers:
   - type: cron
     metadata:
@@ -152,7 +152,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-worker
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "worker.py:main"]
           resources:
