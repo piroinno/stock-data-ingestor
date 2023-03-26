@@ -48,7 +48,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-controller
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "controller.py:main"]
           resources:
@@ -153,7 +153,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-worker
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "worker.py:main"]
           resources:
