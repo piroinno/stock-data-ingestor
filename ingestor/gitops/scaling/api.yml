@@ -61,6 +61,10 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -129,7 +133,7 @@ spec:
     - type: cron
       metadata:
         timezone: "Europe/London"
-        start: "10 * * * *"
+        start: "30 * * * *"
         end: "55 * * * *"
         desiredReplicas: "1"
 ---
@@ -166,6 +170,10 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
