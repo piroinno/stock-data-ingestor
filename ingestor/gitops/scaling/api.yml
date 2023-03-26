@@ -65,11 +65,16 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: DATABASE_URL
-            - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_NAME
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_QUEUE
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: EOD_INGESTOR_STROAGE_QUEUE
             - name: FLAG_SMITH_ENVIRONMENT_KEY
               valueFrom:
                 secretKeyRef:
@@ -80,6 +85,11 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_FILE_SYSTEM
+             - name: MARKETSTACK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: MARKETSTACK_API_KEY
           volumeMounts:
             - name: kv-secret-store
               mountPath: "/mnt/backend-auth"
