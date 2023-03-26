@@ -194,3 +194,6 @@ def main():
     process_messages()
 
     logger.info("EOD Ingestor finished")
+    
+if __name__ == "__main__":
+    main()
