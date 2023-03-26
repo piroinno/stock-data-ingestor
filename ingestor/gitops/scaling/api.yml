@@ -41,6 +41,7 @@ spec:
   template:
     metadata:
       labels:
+        azure.workload.identity/use: "true"
         app: sd-ingestor-controller
     spec:
       serviceAccountName: sd-ingestor-service
