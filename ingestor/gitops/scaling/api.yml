@@ -62,7 +62,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: EOD_DATASTORE_ID
-              value: 1
+              value: "1"
             - name: AZURE_TENANT_ID
               value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
             - name: AZURE_CLIENT_ID
@@ -135,7 +135,7 @@ spec:
     - type: cron
       metadata:
         timezone: "Europe/London"
-        start: "10 * * * *"
+        start: "30 * * * *"
         end: "* 3 * * *"
         desiredReplicas: "1"
 ---
@@ -173,7 +173,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: EOD_DATASTORE_ID
-              value: 1
+              value: "1"
             - name: AZURE_TENANT_ID
               value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
             - name: AZURE_CLIENT_ID
