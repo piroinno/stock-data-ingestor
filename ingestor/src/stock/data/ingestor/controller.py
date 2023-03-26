@@ -77,5 +77,3 @@ def main():
     )
     create_job_messages(db, exchanges)
     logger.info("EOD Ingestor Controller finished")
-
-main()
