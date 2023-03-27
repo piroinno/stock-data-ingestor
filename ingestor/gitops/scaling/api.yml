@@ -135,8 +135,8 @@ spec:
     - type: cron
       metadata:
         timezone: "Europe/London"
-        start: "12 * * * *"
-        end: "59 * * * *"
+        start: "10 * * * *"
+        end: "55 * * * *"
         desiredReplicas: "1"
 ---
 apiVersion: apps/v1
