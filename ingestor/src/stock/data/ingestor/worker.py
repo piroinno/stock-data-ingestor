@@ -29,12 +29,18 @@ def get_requests_with_offset(endpoint, initial_offset, extra_params={}):
             f"{MARKETSTACK_API}/{endpoint}",
             params={**DEFAULT_PARAMS, "offset": offset, **extra_params},
         ).json()
-        data.extend(_data["data"])
-        if (
-            DEFAULT_PARAMS["limit"] >= _data["pagination"]["count"]
-            or offset >= MAX_PAGES
-        ):
+        if(_data.get("data") is not None):
+            data.extend(_data["data"])
+
+        if(_data.get("pagination") is not None):
+            if (
+                DEFAULT_PARAMS["limit"] >= _data["pagination"]["count"]
+                or offset >= MAX_PAGES
+            ):
+                break
+        else:
             break
+        
         offset += 1
 
     return {"data": remove_dupes(data)}
@@ -194,3 +200,6 @@ def main():
     process_messages()
 
     logger.info("EOD Ingestor finished")
+    
+if __name__ == "__main__":
+    main()

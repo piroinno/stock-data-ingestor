@@ -5,7 +5,8 @@ metadata:
   namespace: sd-ingestor
 spec:
   podIdentity:
-    provider: azure | azure-workload
+    provider: azure-workload
+    identityId: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -16,13 +17,14 @@ spec:
   scaleTargetRef:
     name: sd-ingestor-worker-deployment
   triggers:
-  - type: azure-queue
-    metadata:
-      queueName: ingestor-job-queue
-      accountName: dehwstcomsddev
-      queueLength: "5"
-      cloud: public
-    authenticationRef:
+    - type: azure-queue
+      metadata:
+        queueName: ingestor-job-queue
+        accountName: dehwstcomsddev
+        queueLength: "5"
+        cloud: AzurePublicCloud
+        desiredReplicas: "5"
+      authenticationRef:
         name: azure-queue-auth
 ---
 apiVersion: apps/v1
@@ -31,23 +33,25 @@ metadata:
   name: sd-ingestor-controller-deployment
   namespace: sd-ingestor
   labels:
+    azure.workload.identity/use: "true"
     app: sd-ingestor-controller
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sd-ingestor-controller
   template:
     metadata:
       labels:
+        azure.workload.identity/use: "true"
         app: sd-ingestor-controller
     spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-controller
-          image: #{{IMAGE}}#
-          command: ["python"]
-          args: ["-m", "controller:main"]
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
+          command: ["poetry"]
+          args: ["run", "python", "controller.py"]
           resources:
             requests:
               memory: "1024M"
@@ -57,16 +61,27 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: EOD_DATASTORE_ID
+              value: "1"
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
                   key: DATABASE_URL
-            - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_NAME
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_QUEUE
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_ACCOUNT_QUEUE
             - name: FLAG_SMITH_ENVIRONMENT_KEY
               valueFrom:
                 secretKeyRef:
@@ -77,6 +92,11 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_FILE_SYSTEM
+            - name: MARKETSTACK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: MARKETSTACK_API_KEY
           volumeMounts:
             - name: kv-secret-store
               mountPath: "/mnt/backend-auth"
@@ -110,14 +130,14 @@ metadata:
   namespace: sd-ingestor
 spec:
   scaleTargetRef:
-    name: sd-ingestor-worker-deployment
+    name: sd-ingestor-controller-deployment
   triggers:
-  - type: cron
-    metadata:
-      timezone: "Europe/London"
-      start: "* 1 * * *"
-      end: "* 8 * * *"
-      desiredReplicas: "1"
+    - type: cron
+      metadata:
+        timezone: "Europe/London"
+        start: "10 * * * *"
+        end: "55 * * * *"
+        desiredReplicas: "1"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -134,14 +154,15 @@ spec:
   template:
     metadata:
       labels:
+        azure.workload.identity/use: "true"
         app: sd-ingestor-worker
     spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-worker
-          image: #{{IMAGE}}#
-          command: ["python"]
-          args: ["-m", "worker:main"]
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
+          command: ["poetry"]
+          args: ["run", "python", "worker.py"]
           resources:
             requests:
               memory: "1024M"
@@ -151,16 +172,27 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: EOD_DATASTORE_ID
+              value: "1"
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
                   key: DATABASE_URL
-            - name: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_NAME
               valueFrom:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_ACCOUNT_NAME
+            - name: EOD_INGESTOR_STROAGE_QUEUE
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: STOCK_DATA_STORAGE_ACCOUNT_QUEUE
             - name: FLAG_SMITH_ENVIRONMENT_KEY
               valueFrom:
                 secretKeyRef:
@@ -171,6 +203,11 @@ spec:
                 secretKeyRef:
                   name: backend-auth
                   key: STOCK_DATA_STORAGE_FILE_SYSTEM
+            - name: MARKETSTACK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-auth
+                  key: MARKETSTACK_API_KEY
           volumeMounts:
             - name: kv-secret-store
               mountPath: "/mnt/backend-auth"
