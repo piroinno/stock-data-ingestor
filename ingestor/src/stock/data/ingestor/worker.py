@@ -2,6 +2,7 @@ import base64
 import datetime
 from distutils.util import strtobool
 import json
+import math
 import requests
 import logging
 import os
@@ -35,7 +36,7 @@ def get_requests_with_offset(endpoint, initial_offset=1, extra_params={}):
 
         if(_data.get("pagination") is not None):
             if (
-                offset >= MAX_PAGES
+                offset >= MAX_PAGES or offset >= math.ceil(_data["pagination"]["total_pages"] / DEFAULT_PARAMS["limit"])
             ):
                 break
         else:
