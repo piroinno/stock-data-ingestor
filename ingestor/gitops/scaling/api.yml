@@ -147,7 +147,7 @@ metadata:
   labels:
     app: sd-ingestor-worker
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: sd-ingestor-worker
