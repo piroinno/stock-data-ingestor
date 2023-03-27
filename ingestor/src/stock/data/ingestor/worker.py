@@ -17,13 +17,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DEFAULT_PARAMS = {"access_key": os.getenv("MARKETSTACK_API_KEY"), "limit": 1000}
-MAX_PAGES = 10
+MAX_PAGES = 1000
 MARKETSTACK_API = "http://api.marketstack.com/v1"
 
 
-def get_requests_with_offset(endpoint, initial_offset, extra_params={}):
+def get_requests_with_offset(endpoint, initial_offset=1, extra_params={}):
     offset = initial_offset
     data = []
+    logger.info("Getting data from Marketstack API for endpoint: %s", endpoint)
     while True:
         _data = requests.get(
             f"{MARKETSTACK_API}/{endpoint}",
@@ -34,8 +35,7 @@ def get_requests_with_offset(endpoint, initial_offset, extra_params={}):
 
         if(_data.get("pagination") is not None):
             if (
-                DEFAULT_PARAMS["limit"] >= _data["pagination"]["count"]
-                or offset >= MAX_PAGES
+                offset >= MAX_PAGES
             ):
                 break
         else:
