@@ -49,7 +49,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-controller
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "controller.py"]
           resources:
@@ -61,6 +61,12 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: EOD_DATASTORE_ID
+              value: "1"
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -141,7 +147,7 @@ metadata:
   labels:
     app: sd-ingestor-worker
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: sd-ingestor-worker
@@ -154,7 +160,7 @@ spec:
       serviceAccountName: sd-ingestor-service
       containers:
         - name: sd-ingestor-worker
-          image: #{{IMAGE}}#
+          image: psxycrsharedacrstockdatamgnt.azurecr.io/environments/application/ingestor:dev
           command: ["poetry"]
           args: ["run", "python", "worker.py"]
           resources:
@@ -166,6 +172,12 @@ spec:
               cpu: "1"
           imagePullPolicy: Always
           env:
+            - name: EOD_DATASTORE_ID
+              value: "1"
+            - name: AZURE_TENANT_ID
+              value: 859e9d09-9fe3-4451-9029-35d7fb1f2e59
+            - name: AZURE_CLIENT_ID
+              value: 6401c99f-138f-4a0d-95e0-5bda3a5de4c7
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
