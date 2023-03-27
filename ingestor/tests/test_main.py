@@ -145,7 +145,7 @@ def test_get_requests_with_offset():
     with patch("src.stock.data.ingestor.worker.requests") as mock_requests:
         mock_requests.get.return_value.json.return_value = {
             "data": [{"a": 1}, {"a": 2}],
-            "pagination": {"count": 2},
+            "pagination": {"count": 2, "total": 1}
         }
         result = get_requests_with_offset(
             endpoint="eod/XNAS/2020-01-01",

@@ -70,7 +70,7 @@ def create_job_messages(db, exchanges):
 def main():
     logger.info("Starting EOD Ingestor Controller")
     db = SessionLocal()
-    exchanges = get_exchanges(db)
+    exchanges = get_exchanges(db, 1)
     configure_eod_ingestor_controller_auth(
         os.getenv("EOD_INGESTOR_STROAGE_NAME"),
         os.getenv("EOD_INGESTOR_STROAGE_QUEUE"),
