@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DEFAULT_PARAMS = {"access_key": os.getenv("MARKETSTACK_API_KEY"), "limit": 1000}
-MAX_PAGES = 1000
+MAX_PAGES = 100
 MARKETSTACK_API = "http://api.marketstack.com/v1"
 
 
@@ -31,20 +31,24 @@ def get_requests_with_offset(endpoint, initial_offset=1, extra_params={}):
             f"{MARKETSTACK_API}/{endpoint}",
             params={**DEFAULT_PARAMS, "offset": offset, **extra_params},
         ).json()
-        if(_data.get("data") is not None):
-            data.extend(_data["data"])
-
-        if(_data.get("pagination") is not None and _data["pagination"].get("total") is not None):
-            if (
-                offset >= MAX_PAGES or offset >= math.ceil(_data["pagination"]["total"] / DEFAULT_PARAMS["limit"])
+        # if(_data.get("data") is not None):
+        #     print(_data["data"])
+        #     exit
+        data.extend(_data["data"]["eod"])
+        if (
+            _data.get("pagination") is not None
+            and _data["pagination"].get("total") is not None
+        ):
+            if offset >= MAX_PAGES or offset >= math.ceil(
+                _data["pagination"]["total"] / DEFAULT_PARAMS["limit"]
             ):
                 break
         else:
             break
-        
+
         offset += 1
 
-    return {"data": remove_dupes(data)}
+    return remove_dupes(data)
 
 
 def remove_dupes(data):
@@ -73,14 +77,18 @@ def get_ext_eod_exchange(tickers_str, exchange_mic, date=None):
         }
         if date is not None:
             eod_data.extend(
-                get_requests_with_offset(f"eod/{date}", 0, extra_params)["data"]
+                get_requests_with_offset(
+                    f"exchanges/{exchange_mic}/eod/{date}", 0, extra_params
+                )
             )
         else:
             eod_data.extend(
-                get_requests_with_offset(f"eod/latest", 0, extra_params)["data"]
+                get_requests_with_offset(
+                    f"exchanges/{exchange_mic}/eod/latest", 0, extra_params
+                )
             )
 
-    return {"data": eod_data}
+    return eod_data
 
 
 def configure_eod_ingestor_datastore_auth(storage_name, file_system):
@@ -123,7 +131,7 @@ def save_eod(
     }
     configure_eod_ingestor_datastore_auth(eod_ingestor_datastore_name, file_system)
 
-    for eod in eod_data["data"]:
+    for eod in eod_data:
         file_name = f"{file_name_preffix}/{eod['symbol']}.json"
         file_content = json.dumps(eod)
         file_system_client = adls_service_client.get_file_system_client(file_system)
@@ -201,6 +209,7 @@ def main():
     process_messages()
 
     logger.info("EOD Ingestor finished")
-    
+
+
 if __name__ == "__main__":
     main()
