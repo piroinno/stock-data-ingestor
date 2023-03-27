@@ -34,7 +34,7 @@ def get_requests_with_offset(endpoint, initial_offset=1, extra_params={}):
         if(_data.get("data") is not None):
             data.extend(_data["data"])
 
-        if(_data.get("pagination") is not None):
+        if(_data.get("pagination") is not None and _data["pagination"].get("total") is not None):
             if (
                 offset >= MAX_PAGES or offset >= math.ceil(_data["pagination"]["total"] / DEFAULT_PARAMS["limit"])
             ):
