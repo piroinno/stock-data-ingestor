@@ -31,11 +31,16 @@ def get_requests_with_offset(endpoint, initial_offset, extra_params={}):
         ).json()
         if(_data.get("data") is not None):
             data.extend(_data["data"])
-        if (
-            DEFAULT_PARAMS["limit"] >= _data["pagination"]["count"]
-            or offset >= MAX_PAGES
-        ):
+
+        if(_data.get("pagination") is not None):
+            if (
+                DEFAULT_PARAMS["limit"] >= _data["pagination"]["count"]
+                or offset >= MAX_PAGES
+            ):
+                break
+        else:
             break
+        
         offset += 1
 
     return {"data": remove_dupes(data)}
