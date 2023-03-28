@@ -144,35 +144,35 @@ def add_eod_data_store(db: SessionLocal):
 def test_get_requests_with_offset():
     with patch("src.stock.data.ingestor.worker.requests") as mock_requests:
         mock_requests.get.return_value.json.return_value = {
-            "data": [{"a": 1}, {"a": 2}],
-            "pagination": {"count": 2, "total": 1}
+            "data": {"eod": [{"a": 1}, {"a": 2}]},
+            "pagination": {"count": 2, "total": 1},
         }
         result = get_requests_with_offset(
-            endpoint="eod/XNAS/2020-01-01",
+            endpoint="exchanges/XNAS/eod/2020-01-01",
             initial_offset=0,
             extra_params={"symbols": "AAPL,GOOG", "limit": 1000},
         )
-        assert result == {"data": [{"a": 1}, {"a": 2}]}
+        assert result == [{"a": 1}, {"a": 2}]
 
 
 def test_get_ext_eod_exchange():
     with patch("src.stock.data.ingestor.worker.requests") as mock_requests:
         mock_requests.get.return_value.json.return_value = {
-            "data": [{"a": 1}, {"a": 2}],
+            "data": {"eod": [{"a": 1}, {"a": 2}]},
             "pagination": {"count": 2},
         }
         result = get_ext_eod_exchange("AAPL,GOOG", "XNAS")
-        assert result == {"data": [{"a": 1}, {"a": 2}]}
+        assert result == [{"a": 1}, {"a": 2}]
 
 
 def test_get_ext_eod_exchange_with_date():
     with patch("src.stock.data.ingestor.worker.requests") as mock_requests:
         mock_requests.get.return_value.json.return_value = {
-            "data": [{"a": 1}, {"a": 2}],
+            "data": {"eod": [{"a": 1}, {"a": 2}]},
             "pagination": {"count": 2},
         }
         result = get_ext_eod_exchange("AAPL,GOOG", "XNAS", "2020-01-01")
-        assert result == {"data": [{"a": 1}, {"a": 2}]}
+        assert result == [{"a": 1}, {"a": 2}]
 
 
 def test_create_job_messages(db: SessionLocal):
